@@ -15,24 +15,24 @@
 
 <script>
     import axios from 'axios'
+    import { mapGetters, mapActions } from 'vuex'
+
     export default {
-        data () {
-            return {
-                posts: []
-            }
+        computed: {
+            ...mapGetters({
+                posts: 'posts'
+            })
         },
 
         methods: {
-            async getPosts () {
-                let posts = await axios.get('api/posts')
-
-                this.posts = posts.data.data
-            }
+            ...mapActions({
+                getPosts: 'getPosts'
+            })
         },
 
         mounted () {
             this.getPosts()
-        }        
+        }
     }
 </script>
 
