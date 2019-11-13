@@ -1,6 +1,6 @@
 import Vuex from 'vuex'
 import Vue from 'vue'
-import Axios from 'axios'
+import axios from 'axios'
 
 
 Vue.use(Vuex)
@@ -19,15 +19,27 @@ export default new Vuex.Store({
     mutations: {
         SET_POSTS (state, posts) {
             state.posts = posts
+        },
+
+        PREPEND_POST (state, post) {
+            let posts = state.posts.slice()
+            posts.unshift(post)
+
+            state.posts = posts
         }
     },
 
     actions: {
         async getPosts ({ commit }) {
-            let posts = await Axios.get('api/posts')
-
+            let posts = await axios.get('api/posts')
 
             commit('SET_POSTS', posts.data.data)
+        },
+
+        async createPost ({ commit }, data) {
+            let post = await axios.post('api/posts', data)
+
+            commit('PREPEND_POST', post.data.data)
         }
     }
 })
