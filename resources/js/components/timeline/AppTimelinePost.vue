@@ -9,7 +9,9 @@
                 {{ post.body }}
             </p>
 
-            <app-timeline-post-likes />
+            <app-timeline-post-likes 
+                :post="post"
+            />
         </div>
     </div>
 </template>
