@@ -2025,6 +2025,16 @@ __webpack_require__.r(__webpack_exports__);
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var pluralize__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! pluralize */ "./node_modules/pluralize/pluralize.js");
 /* harmony import */ var pluralize__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(pluralize__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(source, true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(source).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+//
+//
+//
 //
 //
 //
@@ -2042,6 +2052,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 
+
 /* harmony default export */ __webpack_exports__["default"] = ({
   props: {
     post: {
@@ -2049,9 +2060,28 @@ __webpack_require__.r(__webpack_exports__);
       type: Object
     }
   },
-  methods: {
+  computed: {
+    canLike: function canLike() {
+      if (this.post.user.data.owner) {
+        return false;
+      }
+
+      if (this.post.user.data.likes_remaining <= 0) {
+        return false;
+      }
+
+      return true;
+    }
+  },
+  methods: _objectSpread({
     pluralize: pluralize__WEBPACK_IMPORTED_MODULE_0___default.a
-  }
+  }, Object(vuex__WEBPACK_IMPORTED_MODULE_1__["mapActions"])({
+    likePost: 'likePost'
+  }), {
+    like: function like() {
+      this.likePost(this.post.id);
+    }
+  })
 });
 
 /***/ }),
@@ -39460,31 +39490,46 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", [
-    _c("span", { staticClass: "text-secondary" }, [
-      _vm._v(
-        "\n       " +
-          _vm._s(_vm.pluralize("like", _vm.post.likes, true)) +
-          " from " +
-          _vm._s(_vm.pluralize("person", _vm.post.likers.data.length, true)) +
-          "\n        (including you)\n    "
-      )
-    ]),
+    _c(
+      "span",
+      { staticClass: "text-secondary" },
+      [
+        _vm._v(
+          "\n       " +
+            _vm._s(_vm.pluralize("like", _vm.post.likes, true)) +
+            " from " +
+            _vm._s(_vm.pluralize("person", _vm.post.likers.data.length, true)) +
+            "\n\n       "
+        ),
+        _vm.post.user.data.liked
+          ? [_vm._v("\n        (including you)\n       ")]
+          : _vm._e()
+      ],
+      2
+    ),
     _vm._v(" "),
-    _vm._m(0)
+    _c("ul", { staticClass: "list-inline mb-0" }, [
+      _vm.canLike
+        ? _c("li", { staticClass: "list-inline-item" }, [
+            _c(
+              "a",
+              {
+                attrs: { href: "#" },
+                on: {
+                  click: function($event) {
+                    $event.preventDefault()
+                    return _vm.like($event)
+                  }
+                }
+              },
+              [_vm._v("Like it")]
+            )
+          ])
+        : _vm._e()
+    ])
   ])
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("ul", { staticClass: "list-inline mb-0" }, [
-      _c("li", { staticClass: "list-inline-item" }, [
-        _c("a", { attrs: { href: "" } }, [_vm._v("Like it")])
-      ])
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 
 
@@ -53101,6 +53146,15 @@ vue__WEBPACK_IMPORTED_MODULE_2___default.a.use(vuex__WEBPACK_IMPORTED_MODULE_1__
     SET_POSTS: function SET_POSTS(state, posts) {
       state.posts = posts;
     },
+    UPDATE_POST: function UPDATE_POST(state, post) {
+      state.posts = state.posts.map(function (p) {
+        if (p.id === post.id) {
+          return post;
+        }
+
+        return p;
+      });
+    },
     PREPEND_POST: function PREPEND_POST(state, post) {
       var posts = state.posts.slice();
       posts.unshift(post);
@@ -53169,6 +53223,37 @@ vue__WEBPACK_IMPORTED_MODULE_2___default.a.use(vuex__WEBPACK_IMPORTED_MODULE_1__
       }
 
       return createPost;
+    }(),
+    likePost: function () {
+      var _likePost = _asyncToGenerator(
+      /*#__PURE__*/
+      _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.mark(function _callee3(_ref3, id) {
+        var commit, post;
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default.a.wrap(function _callee3$(_context3) {
+          while (1) {
+            switch (_context3.prev = _context3.next) {
+              case 0:
+                commit = _ref3.commit;
+                _context3.next = 3;
+                return axios__WEBPACK_IMPORTED_MODULE_3___default.a.post("api/posts/".concat(id, "/likes"));
+
+              case 3:
+                post = _context3.sent;
+                commit('UPDATE_POST', post.data.data);
+
+              case 5:
+              case "end":
+                return _context3.stop();
+            }
+          }
+        }, _callee3);
+      }));
+
+      function likePost(_x4, _x5) {
+        return _likePost.apply(this, arguments);
+      }
+
+      return likePost;
     }()
   }
 }));
