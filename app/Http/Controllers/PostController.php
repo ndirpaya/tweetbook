@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Post;
+use App\Events\PostCreated;
 use App\Transformers\PostTransformer;
 use Illuminate\Http\Request;
 
@@ -23,6 +24,14 @@ class PostController extends Controller
             ->toArray();
     }
 
+    public function show(Post $post)
+    {
+        return fractal()
+            ->item($post)
+            ->transformWith(new PostTransformer())
+            ->toArray();
+    }
+
     public function store(Request $request)
     {  
         $this->validate($request, [
@@ -30,6 +39,8 @@ class PostController extends Controller
         ]); 
 
         $post = $request->user()->posts()->create($request->only('body'));
+
+        broadcast(new PostCreated($post))->toOthers();
 
         return fractal()
         ->item($post)
