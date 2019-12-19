@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Post extends Model
 {
-    const MAX_LIKES = 5;
+    const MAX_LIKES = 1;
 
     protected $fillable = [
         'body'
